@@ -14,21 +14,12 @@ except ImportError:
     BlockBlobService = None
 
 from dvc.utils.compat import urlparse
-from dvc.progress import progress
+from dvc.progress import Tqdm
 from dvc.config import Config
 from dvc.remote.base import RemoteBASE
 from dvc.path_info import CloudURLInfo
 
-
 logger = logging.getLogger(__name__)
-
-
-class Callback(object):
-    def __init__(self, name):
-        self.name = name
-
-    def __call__(self, current, total):
-        progress.update_target(self.name, current, total)
 
 
 class RemoteAZURE(RemoteBASE):
@@ -122,15 +113,19 @@ class RemoteAZURE(RemoteBASE):
     def _upload(
         self, from_file, to_info, name=None, no_progress_bar=False, **_kwargs
     ):
-        cb = None if no_progress_bar else Callback(name)
-        self.blob_service.create_blob_from_path(
-            to_info.bucket, to_info.path, from_file, progress_callback=cb
-        )
+        desc = Tqdm.truncate(name, 10) if name else None
+        with Tqdm(desc=desc, disable=no_progress_bar) as pbar:
+            self.blob_service.create_blob_from_path(
+                to_info.bucket, to_info.path, from_file,
+                progress_callback=pbar.update_to
+            )
 
     def _download(
         self, from_info, to_file, name=None, no_progress_bar=False, **_kwargs
     ):
-        cb = None if no_progress_bar else Callback(name)
-        self.blob_service.get_blob_to_path(
-            from_info.bucket, from_info.path, to_file, progress_callback=cb
-        )
+        desc = Tqdm.truncate(name, 10) if name else None
+        with Tqdm(desc=desc, disable=no_progress_bar) as pbar:
+            self.blob_service.get_blob_to_path(
+                from_info.bucket, from_info.path, to_file,
+                progress_callback=pbar.update_to
+            )
