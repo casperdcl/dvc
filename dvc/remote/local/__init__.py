@@ -244,7 +244,7 @@ class RemoteLOCAL(RemoteBASE):
     def cache_exists(self, md5s, jobs=None):
         return [
             checksum
-            for checksum in Tqdm(md5s, unit='md5')
+            for checksum in Tqdm(md5s, unit="md5")
             if not self.changed_cache_file(checksum)
         ]
 
@@ -337,9 +337,7 @@ class RemoteLOCAL(RemoteBASE):
         cache = []
         path_infos = []
         names = []
-        for md5, info in Tqdm(
-            status_info.items(), desc="Analysing status"
-        ):
+        for md5, info in Tqdm(status_info.items(), desc="Analysing status"):
             if info["status"] == status:
                 cache.append(self.checksum_to_path_info(md5))
                 path_infos.append(remote.checksum_to_path_info(md5))

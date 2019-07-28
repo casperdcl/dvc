@@ -57,8 +57,11 @@ def file_md5(fname):
         name = relpath(fname)
 
         with Tqdm(
-            desc_truncate=name, disable=not bar, total=size, bytes=True,
-            leave=False
+            desc_truncate=name,
+            disable=not bar,
+            total=size,
+            bytes=True,
+            leave=False,
         ) as pbar:
             with open(fname, "rb") as fobj:
                 while True:
@@ -128,7 +131,9 @@ def copyfile(src, dest, no_progress_bar=False, name=None):
         System.reflink(src, dest)
     except DvcException:
         with Tqdm(
-            desc_truncate=name, disable=no_progress_bar, total=total,
+            desc_truncate=name,
+            disable=no_progress_bar,
+            total=total,
             bytes=True,
         ) as pbar:
             with open(src, "rb") as fsrc, open(dest, "wb+") as fdest:
