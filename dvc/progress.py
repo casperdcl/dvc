@@ -78,7 +78,9 @@ class Tqdm(tqdm):
             and not env2bool("DVC_IGNORE_ISATTY")
             and hasattr(file, "isatty")
         ):
-            disable = not file.isatty()
+            disable = not (
+                file.isatty() or getattr(file, "encoding", None) == "cp1252"
+            )
         super().__init__(
             iterable=iterable,
             disable=disable,
