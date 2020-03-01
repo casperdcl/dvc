@@ -79,7 +79,12 @@ class Tqdm(tqdm):
             and hasattr(file, "isatty")
         ):
             disable = not (
-                file.isatty() or getattr(file, "encoding", None) == "cp1252"
+                file.isatty()
+                or (
+                    # Non-nested git-bash
+                    getattr(file, "encoding", None) == "cp1252"
+                    and len(getattr(self, "_instances")) < 2
+                )
             )
         super().__init__(
             iterable=iterable,
