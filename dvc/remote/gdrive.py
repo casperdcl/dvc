@@ -386,14 +386,8 @@ class GDriveRemote(BaseRemote):
         # it does not create a file on the remote
         gdrive_file = self._drive.CreateFile(param)
 
-        with Tqdm(
-            desc=progress_desc,
-            disable=no_progress_bar,
-            bytes=True,
-            # explicit `bar_format` as `total` will be set by `update_to`
-            bar_format=Tqdm.BAR_FMT_DEFAULT,
-        ) as pbar:
-            gdrive_file.GetContentFile(to_file, callback=pbar.update_to)
+        with Tqdm(disable=no_progress_bar):
+            gdrive_file.GetContentFile(to_file)
 
     @_gdrive_retry
     def _gdrive_delete_file(self, item_id):
