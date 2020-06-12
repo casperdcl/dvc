@@ -71,5 +71,5 @@ else
   echo "export SNAP_CHANNEL_MAJOR=v$TAG_MAJOR/edge" >>env.sh
 fi
 
-# NOTE: after deprecating this branch, uncomment this line
+# NOTE: after deprecating this major version branch, uncomment this line
 # echo "unset SNAP_CHANNEL" >>env.sh
