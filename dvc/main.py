@@ -2,6 +2,9 @@
 
 import errno
 import logging
+import os
+import shutil
+import tempfile
 
 from dvc import analytics
 from dvc.cli import parse_args
@@ -11,6 +14,7 @@ from dvc.external_repo import clean_repos
 from dvc.logger import FOOTER, disable_other_loggers
 from dvc.tree.pool import close_pools
 from dvc.utils import format_link
+from dvc.utils.pkg import PKG
 
 # Workaround for CPython bug. See [1] and [2] for more info.
 # [1] https://github.com/aws/aws-cli/blob/1.16.277/awscli/clidriver.py#L55
@@ -48,6 +52,13 @@ def main(argv=None):
                 }[max(-2, min(verbosity, 2))]
             )
         logger.trace(args)
+
+        if PKG == "snap":
+            tempfile.tempdir = os.getenv("SNAP_USER_COMMON") + "/tmp"
+            try:
+                os.mkdir(tempfile.tempdir)
+            except FileExistsError:
+                pass
 
         cmd = args.func(args)
         ret = cmd.run()
@@ -92,6 +103,9 @@ def main(argv=None):
         # Remove cached repos in the end of the call, these are anonymous
         # so won't be reused by any other subsequent run anyway.
         clean_repos()
+
+        if PKG == "snap":
+            shutil.rmtree(tempfile.tempdir)
 
     if ret != 0:
         logger.info(FOOTER)
